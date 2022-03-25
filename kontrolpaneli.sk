@@ -1,0 +1,58 @@
+options:
+    komut: execute player command "KOMUT"
+
+on load:
+    set {kontrolpaneli} to player head named "&6Kontrol Paneli" with lore "", "&7 Ana menüye kolaylıkla erişmeni sağlar", "", "&ePaneli açmak için Sağ veya Sol Tıkla", "&ePaneli kaldırmak için Shift + Sol Tıkla" with nbt "{SkullOwner:{Id:""99115b4d-8ba2-4473-81cb-8a8d10d9fc4d"",Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYThkZmU4ZDBmZDQ1NTNmZmVkMDM0NGRhZjcyZDg4ZGVhZTg1NDA4ZWJjMTg0ZWFjMmExMjQ1YWVlYjNhMDkxMyJ9fX0=""}]}}}"
+    add "{OzelEsya:Panel}" to nbt of {kontrolpaneli}
+
+command /panelal:
+    trigger:
+        if player's slot 8 is empty:
+            remove 99999 from item amount of (all items in player's inventory where [nbt of input contains "OzelEsya:""Panel"""])
+            set slot 8 of player's inventory to {kontrolpaneli}
+            send "&aKontrol Paneli envanterine verildi." to player
+        else:
+            send "&c9. Slotun dolu olduğu için kontrol panelini alamadın." to player
+
+command /panelsil:
+    trigger:
+        if player has (all items in player's inventory where [nbt of input contains "OzelEsya:""Panel"""]):
+            remove 99999 from item amount of (all items in player's inventory where [nbt of input contains "OzelEsya:""Panel"""])
+            send "&aKontrol Paneli envanterinden kaldırıldı." to player
+        else:
+            send "&cEnvanterinde Kontrol Paneli bulunamadı." to player
+
+on join:
+    if player's slot 8 is empty:
+        set slot 8 of player's inventory to {kontrolpaneli}
+        send "&aKontrol Paneli envanterine verildi." to player
+    else:
+        send "&c9. Slotun dolu olduğu için kontrol panelini alamadın." to player
+
+on drop:
+    if nbt of event-item contains "OzelEsya:""Panel""":
+        cancel event
+
+on inventory click:
+    if clicked inventory is player's inventory:
+        if clicked type is left mouse button with shift:
+            if nbt of event-item contains "OzelEsya:""Panel""":
+                remove event-item from player
+                send "&aKontrol Paneli envanterinden kaldırıldı." to player
+        else:
+            if nbt of event-item contains "OzelEsya:""Panel""":
+                if clicked slot is 8:
+                    cancel event
+                    {@komut}
+                else:
+                    remove event-items from event-slot
+    else if clicked inventory is not player's inventory:
+        cancel event
+
+on click:
+    if nbt of player's held item contains "OzelEsya:""Panel""":
+        cancel event
+        {@komut}
+    if nbt of player's off hand tool contains "OzelEsya:""Panel""":
+        cancel event
+        remove event-items from player
